@@ -23,6 +23,6 @@ setuptools.setup(
         'numpy<1.19.0',
         'typer==0.3.2',
         'matplotlib==3.3.2',
-        'scipy==1.0.1'
+        'scipy==1.2.0'
     ]
 )
