@@ -161,9 +161,27 @@ def dynamic_equation(j: np.array, w_dot: np.array, w: np.array):
 
     Returns
     -------
-    m : np.array
+    m_body : np.array
         External angular moment applied to the body's main axes
 
     """
     m = np.dot(j, w_dot) + np.cross(w_dot, np.dot(J, w))
     return m
+
+
+def nadir_vector(x: np.array) -> np.array:
+    """
+
+    Parameters
+    ----------
+    x : numpy.array
+        Position relative to ECI, in meters
+
+    Returns
+    -------
+    u_e : numpy.array
+        Nadir vector
+
+    """
+    u_e = -x / np.linalg.norm(x)
+    return u_e
