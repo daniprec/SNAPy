@@ -2,24 +2,33 @@ import numpy as np
 from math import (sin, cos, acos)
 
 
-def direction_cosine_matrix(theta1: float, theta2: float, theta3: float):
+def direction_cosine_matrix(thetas: np.array):
     """
     The Direction Cosine Matrix (DCM) is a 3 by 3 matrix
     that defines the rotations between two reference frames.
     theta are the Euler rotation angles (roll, pitch, yaw)
     """
     r1 = np.array([[1, 0, 0],
-                    [0, cos(theta1), sin(theta1)],
-                    [0, -sin(theta1), cos(theta1)]])
-    r2 = np.array([[cos(theta2), 0, -sin(theta2)],
+                    [0, cos(thetas[0]), sin(thetas[0])],
+                    [0, -sin(thetas[0]), cos(thetas[0])]])
+    r2 = np.array([[cos(thetas[1]), 0, -sin(thetas[1])],
                     [0, 1, 0],
-                    [sin(theta2), 0, cos(theta2)]])
-    r3 = np.array([[cos(theta3), sin(theta3), 0],
-                    [-sin(theta3), cos(theta3), 0],
+                    [sin(thetas[1]), 0, cos(thetas[1])]])
+    r3 = np.array([[cos(thetas[2]), sin(thetas[2]), 0],
+                    [-sin(thetas[2]), cos(thetas[2]), 0],
                     [0, 0, 1]])
     c = np.dot(np.dot(r1, r2), r3)
     return c
 
+
+def rotate_frame(x: np.array, thetas: np.array):
+    """
+    Rotate to one reference frame to the other
+    """
+    c = direction_cosine_matrix(thetas)
+    x_c = np.dot(c, x)
+    return x_c
+    
 
 def eigen_axis_rotation(c: np.array):
     assert c.shape == (3, 3)
@@ -65,4 +74,3 @@ def dynamic_equation(J: np.array, w_dot: np.array, w: np.array):
     """
     M = np.dot(J, w_dot) + np.cross(w_dot, np.dot(J, w))
     return M
-    
