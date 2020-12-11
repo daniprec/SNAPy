@@ -24,5 +24,6 @@ setuptools.setup(
         'typer==0.3.2',
         'matplotlib==3.3.2',
         'scipy==1.2.0'
+        'toml==0.10.2'
     ]
 )

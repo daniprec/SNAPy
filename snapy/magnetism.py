@@ -1,3 +1,5 @@
+from math import pi
+
 import numpy as np
 
 from snapy.astrodynamics import nadir_vector
@@ -100,40 +102,130 @@ def magnetic_torque(mag: np.array, b_earth: np.array) -> np.array:
     return m_mag
 
 
-def hysteresis_torque(
-    hysteresis_curve: str, v_hyst: np.array, b_earth: np.array, c_bi: np.array
+def hysteresis_loop(
+    b: np.array,
+    h: np.array,
+    dhdt: np.array,
+    dt: float,
+    b_s: float,
+    h_c: float,
+    k: float,
+    p: float,
+    q0: float,
 ) -> np.array:
     """
 
     Parameters
     ----------
-    hysteresis_curve : str
-        Name of the hysteresis loop function
-    v_hyst : numpy.array
-        Volume of the hysteresis material along the three axes, in cubic meters
+    b : numpy.array
+        Magnetic field of the material, in Tesla
+    h : numpy.array
+        Outside magnetic field strength, in Amperes per meter
+    dhdt : numpy.array
+        dH / dt, in Amperes per meter per second
+    dt : float
+        Differential of time, in seconds
+    b_s : float
+        Saturation of the material, in Tesla
+    h_c : float
+        Coercitivity of the material, in Amperes per meter
+    k : float
+        Constant, in meters per Ampere
+    p : float
+        Exponent of the fractional distance F
+    q0 : float
+        Value of Q for F = 0
+
+    Returns
+    -------
+    b_new : numpy.array
+        New magnetic field of the material, in Tesla
+
+    """
+
+    # Value of H on the left boundary curve corresponding to B, HL (A / m)
+    h_l = np.tan(pi * np.divide(b, b_s) / 2) / k - h_c
+
+    # Boundary curve slope, BP (G * m / A)
+    bp = 2 * k * b_s / pi * np.cos(pi * np.divide(b, b_s) / 2) ** 2
+
+    # Fractional distance, F
+    f = (h - h_l) / 2 / h_c
+    # It is contained between [1, -1]
+    f[f > 1] = 1
+    f[f < -1] = -1
+    # If dH/dt is negative, measure F from the right hand boundary
+    f[dhdt < 0] = 1 - f
+
+    # Sign of F is relevant, and as such f**p must maintain the sign of F
+    # We save the signs of F
+    f_sign = np.sign(f)
+    f = np.abs(f)
+
+    # Boundary slope multiplier, Q
+    q = q0 + (1 - q0) * f_sign * np.power(f, p)
+
+    # dB / dt (G / s)
+    dbdt = q * bp * dhdt
+
+    # Compute the new magnetic field of the material
+    b_new = b + dbdt * dt
+
+    return b_new
+
+
+def hysteresis_torque(
+    b_hyst: np.array,
+    b_earth: np.array,
+    dhdt: float,
+    dt: float,
+    c_bi: np.array,
+    cfg_hyst: dict,
+) -> np.array:
+    """
+
+    Parameters
+    ----------
+    b_hyst : numpy.array
+        Magnetic field of the material, in Tesla
     b_earth : numpy.array
         Earth magnetic flux density vector in ECI
+    dhdt : numpy.array
+        dH / dt, in Amperes per meter per second
+    dt : float
+        Differential of time, in seconds
     c_bi : np.array
         Rotation matrix from the ECI frame to the body frame describing the attitude
         of the satellite
+    cfg_hyst : dict
+        Configuration of the hysteresis material
 
     Returns
     -------
     m_hyst : numpy.array
         Magnetic torque of the hysteresis material
+    b_hyst : numpy.array
+        New magnetic field of the material, in Tesla
 
     """
-    # Rotate vector into bodyframe
+    # Rotate vector into body frame
     b_earth_body = c_bi * b_earth
     # Magnetic field density
     h_earth = (1 / MU0) * b_earth_body
-    # Approximated hysteresis loop model
-    try:
-        b_hyst = eval(hysteresis_curve)(h_earth)
-    except ValueError:
-        raise ValueError(f"Unrecognised hysteresis loop function: {hysteresis_curve}")
+    # New magnetic field of the material
+    b_hyst = hysteresis_loop(
+        b_hyst,
+        h_earth,
+        dhdt,
+        dt,
+        cfg_hyst["b_s"],
+        cfg_hyst["h_c"],
+        cfg_hyst["k"],
+        cfg_hyst["p"],
+        cfg_hyst["q0"],
+    )
     # Magnetic moment of the hysteresis material
-    mag_hyst = b_hyst * v_hyst / MU0
+    mag_hyst = b_hyst * cfg_hyst["v"] / MU0
     # Torque of the hysteresis material
     m_hyst = magnetic_torque(mag_hyst, b_earth_body)
-    return m_hyst
+    return m_hyst, b_hyst
