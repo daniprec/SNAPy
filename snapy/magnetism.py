@@ -20,32 +20,32 @@ def magnetic_dipole_coil(i: float, n: int, area: float) -> float:
 
     Returns
     -------
-    m : float
+    mag : float
         The magnetic dipole in Amperes * meters squared
 
     """
-    m = i * n * area
-    return m
+    mag = i * n * area
+    return mag
 
 
-def magnetic_dipole_magnet(b: np.array, v: float):
+def magnetic_dipole_magnet(b: np.array, vol: float):
     """The magnetic dipole of a permanent magnet, or any material
 
     Parameters
     ----------
     b : numpy.array
         Magnetic flux density of the magnet, in Tesla
-    v : float
+    vol : float
         Volume of the material, in cubic meters
 
     Returns
     -------
-    m : numpy.array
+    mag : numpy.array
         The magnetic dipole in Amperes * meters squared
 
     """
-    m = b * v * MU0
-    return m
+    mag = b * vol * MU0
+    return mag
 
 
 def magnetic_field(x: np.array, h0: float, u_m: np.array, c_ei: np.array) -> np.array:
@@ -225,7 +225,7 @@ def hysteresis_torque(
         cfg_hyst["q0"],
     )
     # Magnetic moment of the hysteresis material
-    mag_hyst = b_hyst * cfg_hyst["v"] / MU0
+    mag_hyst = b_hyst * cfg_hyst["vol"] / MU0
     # Torque of the hysteresis material
     m_hyst = magnetic_torque(mag_hyst, b_earth_body)
     return m_hyst, b_hyst
