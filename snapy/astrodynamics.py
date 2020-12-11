@@ -4,8 +4,8 @@ import numpy as np
 
 
 def direction_cosine_matrix(thetas: np.array) -> np.array:
-    """The Direction Cosine Matrix (DCM) is a 3 by 3 matrix that defines the rotations
-    between two reference frames.
+    """The Direction Cosine Matrix (DCM) is a 3 by 3 matrix that defines the
+    rotations between two reference frames.
 
     Parameters
     ----------
@@ -165,7 +165,7 @@ def dynamic_equation(j: np.array, w_dot: np.array, w: np.array):
         External angular moment applied to the body's main axes
 
     """
-    m = np.dot(j, w_dot) + np.cross(w_dot, np.dot(J, w))
+    m = np.dot(j, w_dot) + np.cross(w_dot, np.dot(j, w))
     return m
 
 

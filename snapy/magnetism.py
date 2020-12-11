@@ -1,11 +1,7 @@
 import numpy as np
 
 from snapy.astrodynamics import nadir_vector
-
-# Magnetic permeability of free space
-MU0 = 1.25663706 * 1e-6  # m kg s-2 A-2
-# Equatorial radius of Earth
-R_EARTH = 6.371 * 1e6  # m
+from snapy.constants import MU0, R_EARTH
 
 
 def magnetic_dipole_coil(i: float, n: int, area: float) -> float:
@@ -131,11 +127,11 @@ def hysteresis_torque(
     b_earth_body = c_bi * b_earth
     # Magnetic field density
     h_earth = (1 / MU0) * b_earth_body
-    # Aproximated hysteresis loop model
+    # Approximated hysteresis loop model
     try:
         b_hyst = eval(hysteresis_curve)(h_earth)
     except ValueError:
-        raise ValueError(f"Unrecognised hysteresis loop funcion: {hysteresis_curve}")
+        raise ValueError(f"Unrecognised hysteresis loop function: {hysteresis_curve}")
     # Magnetic moment of the hysteresis material
     mag_hyst = b_hyst * v_hyst / MU0
     # Torque of the hysteresis material
