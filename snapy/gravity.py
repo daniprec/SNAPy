@@ -1,6 +1,6 @@
 import numpy as np
 
-from snapy.astrodynamics import rotate_frame, nadir_vector
+from snapy.astrodynamics import nadir_vector
 from snapy.constants import G, MU, M_EARTH
 
 

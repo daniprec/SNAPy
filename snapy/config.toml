@@ -1,13 +1,13 @@
 [structure]
 m = 1.143  # Mass (kg)
 inertia = [
-    [2e-3, 1.631e-5, 4.571e-5],
-    [1.631e-5, 2e-3, 1.911e-5],
-    [4.571e-5, 1.911e-5, 2e-3],
+    [2.0e-3, 1.631e-5, 4.571e-5],
+    [1.631e-5, 2.0e-3, 1.911e-5],
+    [4.571e-5, 1.911e-5, 2.0e-3],
 ]  # Inertia matrix J (kg m2)
 
 [magnets]
-mag = [0.5, 0, 0]  # Magnetic dipole (A m2)
+mag = [0.5, 0.0, 0.0]  # Magnetic dipole (A m2)
 
 [rods]
 vol = [0.05e-6, 0.05e-6, 0.05e-6]  # Volume (m3)
@@ -19,7 +19,7 @@ p = 4.75
 q0 = 0.0885
 
 [shielding]
-vol = [0, 0.574e-6, 0]  # Volume (m3)
+vol = [0.0, 0.574e-6, 0.0]  # Volume (m3)
 h_c = 6e-6  # Coercitivity (A m)
 b_r = 0  # Remanence (T)
 b_s = 0.75  # Saturation (T)
@@ -28,6 +28,6 @@ p = 4.75
 q0 = 0.0885
 
 [orbit]
-x = [0, 6.767e6, 0]  # Initial position (m, ECI)
-v = [4.7681e3, 0, 6.0244e3]  # Initial velocity (m / s)
+x = [0.0, 6.767e6, 0.0]  # Initial position (m, ECI)
+v = [4.7681e3, 0.0, 6.0244e3]  # Initial velocity (m / s)
 w = [90, 90, 90]  # Initial tumbling rates (deg / s)
