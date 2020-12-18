@@ -1,11 +1,16 @@
 """
 Physic constants
 """
+import numpy as np
 
 # Equatorial radius of Earth (m)
 R_EARTH = 6.371 * 1e6
 # Mass of Earth (kg)
 M_EARTH = 5.972 * 1e24
+# Dipole strength (Wb * m)
+H0 = 7.9430e15 / R_EARTH**3
+# Earth magnetic dipole (A * m2)
+MAG_EARTH = np.array([-0.0653, 0.1865, -0.9803])
 
 # Gravitational constant (m3 kg-1 s-2)
 G = 6.67408 * 1e-11

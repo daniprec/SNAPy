@@ -3,7 +3,7 @@ from math import pi
 import numpy as np
 
 from snapy.astrodynamics import nadir_vector
-from snapy.constants import MU0, R_EARTH
+from snapy.constants import MU0, R_EARTH, H0, MAG_EARTH
 
 
 def magnetic_dipole_coil(i: float, n: int, area: float) -> float:
@@ -48,7 +48,7 @@ def magnetic_dipole_magnet(b: np.array, vol: float):
     return mag
 
 
-def magnetic_field(x: np.array, h0: float, u_m: np.array, c_ei: np.array) -> np.array:
+def earth_magnetic_field(x: np.array, c_ei: np.array) -> np.array:
     """Based on the development of the Dipole Model, the magnetic field at a certain
     point in orbit is calculated
 
@@ -56,10 +56,6 @@ def magnetic_field(x: np.array, h0: float, u_m: np.array, c_ei: np.array) -> np.
     ----------
     x : numpy.array
         Position vector in ECI
-    h0 : float
-        Dipole strength in Webers * meter
-    u_m : numpy.array
-        Unit vector along the magnetic dipole in ECEF
     c_ei : numpy.array
         Rotation matrix from ECI to ECEF. It is time dependent as the ECEF frame
         rotates  about ECI
@@ -74,8 +70,10 @@ def magnetic_field(x: np.array, h0: float, u_m: np.array, c_ei: np.array) -> np.
     x_ecef = np.dot(c_ei, x)
     # Unit vector at which the magnetic field is calculated in ECEF
     u_x = nadir_vector(x_ecef)
+    # TODO: Ensure U_M is in ECEF
+    u_m = MAG_EARTH
     # The magnetic field is computed in ECEF
-    b = ((R_EARTH ** 3) * h0 / np.norm(x_ecef) ^ 3) * (3 * np.dot(u_m, u_x) * u_x - u_m)
+    b = ((R_EARTH ** 3) * H0 / np.norm(x_ecef) ^ 3) * (3 * np.dot(u_m, u_x) * u_x - u_m)
     # The calculated value of the magnetic field is rotated to eci
     c_ie = np.linalg.inv(c_ei)
     b_eci = np.dot(c_ie, b)
