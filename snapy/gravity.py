@@ -71,7 +71,7 @@ def gravity_torque(x: np.array, c_bi: np.array, inertia: np.array) -> np.array:
     # Distance to the center (ECI)
     r = np.linalg.norm(x)
     # The position vector is rotated into the body frame
-    x_body = c_bi * x
+    x_body = np.dot(c_bi, x)
     # Nadir vector (body)
     u_e = nadir_vector(x_body)
     # Gravity gradient torque
@@ -98,7 +98,7 @@ def gravity_torque_smart(x: np.array, c_bi: np.array, inertia: np.array) -> np.a
 
     """
     # The position vector is rotated into the body frame
-    x_body = c_bi * x
+    x_body = np.dot(c_bi, x)
     # Nadir vector (body frame)
     u_e = nadir_vector(x_body)
     # Gravity gradient torque

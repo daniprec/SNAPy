@@ -71,14 +71,14 @@ def magnetic_field(x: np.array, h0: float, u_m: np.array, c_ei: np.array) -> np.
 
     """
     # Position vector is first rotated into ECEF
-    x_ecef = c_ei * x
+    x_ecef = np.dot(c_ei, x)
     # Unit vector at which the magnetic field is calculated in ECEF
     u_x = nadir_vector(x_ecef)
     # The magnetic field is computed in ECEF
     b = ((R_EARTH ** 3) * h0 / np.norm(x_ecef) ^ 3) * (3 * np.dot(u_m, u_x) * u_x - u_m)
     # The calculated value of the magnetic field is rotated to eci
     c_ie = np.linalg.inv(c_ei)
-    b_eci = c_ie * b
+    b_eci = np.dot(c_ie, b)
     return b_eci
 
 
@@ -209,7 +209,7 @@ def hysteresis_torque(
 
     """
     # Rotate vector into body frame
-    b_earth_body = c_bi * b_earth
+    b_earth_body = np.dot(c_bi, b_earth)
     # Magnetic field density
     h_earth = (1 / MU0) * b_earth_body
     # New magnetic field of the material
