@@ -225,7 +225,7 @@ def compute_ecef_dcm(date: str) -> np.array:
     -------
     c_ei : numpy.array
         Rotation matrix from ECI to ECEF
-    
+
     """
     date_ei = datetime.datetime.strptime(DATE_EI, "%Y/%m/%d %H:%M:%S.%f")
     date = datetime.datetime.strptime(date, "%Y/%m/%d %H:%M:%S.%f")
