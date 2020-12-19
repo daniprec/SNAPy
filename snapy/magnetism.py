@@ -138,11 +138,11 @@ def hysteresis_loop(
     Parameters
     ----------
     b : numpy.array
-        Magnetic field of the material, in Tesla
+        Magnetic field of the material in bodyframe, in Tesla
     h : numpy.array
-        Outside magnetic field strength, in Amperes per meter
+        Outside magnetic field strength in bodyframe, in Amperes per meter
     dhdt : numpy.array
-        dH / dt, in Amperes per meter per second
+        dH / dt in bodyframe, in Amperes per meter per second
     dt : float
         Differential of time, in seconds
     b_s : float
@@ -175,7 +175,7 @@ def hysteresis_loop(
     f[f > 1] = 1
     f[f < -1] = -1
     # If dH/dt is negative, measure F from the right hand boundary
-    f[dhdt < 0] = 1 - f
+    f[dhdt < 0] = 1 - f[dhdt < 0]
 
     # Sign of F is relevant, and as such f**p must maintain the sign of F
     # We save the signs of F
@@ -211,7 +211,7 @@ def hysteresis_torque(
     b_earth : numpy.array
         Earth magnetic flux density vector in ECI
     dhdt : numpy.array
-        dH / dt, in Amperes per meter per second
+        dH / dt in ECI, in Amperes per meter per second
     dt : float
         Differential of time, in seconds
     c_bi : np.array
@@ -230,13 +230,14 @@ def hysteresis_torque(
     """
     # Rotate vector into body frame
     b_earth_body = np.dot(c_bi, b_earth)
+    dhdt_body = np.dot(c_bi, dhdt)
     # Magnetic field density
     h_earth = (1 / MU0) * b_earth_body
     # New magnetic field of the material
     b_hyst = hysteresis_loop(
         b_hyst,
         h_earth,
-        dhdt,
+        dhdt_body,
         dt,
         cfg_hyst["b_s"],
         cfg_hyst["h_c"],
