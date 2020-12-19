@@ -73,7 +73,7 @@ def earth_magnetic_field(x: np.array, c_ei: np.array) -> np.array:
     # TODO: Ensure U_M is in ECEF
     u_m = MAG_EARTH
     # The magnetic field is computed in ECEF
-    b = ((R_EARTH ** 3) * H0 / np.norm(x_ecef) ^ 3) * (3 * np.dot(u_m, u_x) * u_x - u_m)
+    b = ((R_EARTH ** 3) * H0 / np.linalg.norm(x_ecef) ** 3) * (3 * np.dot(u_m, u_x) * u_x - u_m)
     # The calculated value of the magnetic field is rotated to eci
     c_ie = np.linalg.inv(c_ei)
     b_eci = np.dot(c_ie, b)
