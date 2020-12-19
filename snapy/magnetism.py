@@ -100,6 +100,28 @@ def magnetic_torque(mag: np.array, b_earth: np.array) -> np.array:
     return m_mag
 
 
+def magnetic_field_change(b_prev: np.array, b_new: np.array, dt: float):
+    """Compute the change on magnetic field
+
+    Parameters
+    ----------
+    b_prev : numpy.array
+        Magnetic field at time t, in Tesla
+    b_new : numpy.array
+        Magnetic field at time t + dt, in Tesla
+    dt : float
+        Time delta, in seconds
+
+    Returns
+    -------
+    dhdt : numpy.array
+        Change on magnetic field strength, in Amperes per meter per second
+
+    """
+    dhdt = (b_new - b_prev) / MU0 / dt
+    return dhdt
+
+
 def hysteresis_loop(
     b: np.array,
     h: np.array,
