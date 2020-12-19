@@ -19,3 +19,11 @@ MU = G * M_EARTH
 
 # Magnetic permeability of free space (m kg s-2 A-2)
 MU0 = 1.25663706 * 1e-6
+
+# ECI to ECEF
+C_EI = np.array([
+    [-0.1839, 0.9829, 0.0004],
+    [-0.9829, -0.1839, 0.0020],
+    [0.0020, 0.0000, 1.0000],
+])  # Reference ECI to ECEF DCM at given date
+DATE_EI = "2020/01/01 00:00:00"  # Time of reference DCM

@@ -27,6 +27,7 @@ k = 9592
 p = 4.75
 q0 = 0.0885
 
+
 [simulation]
 x = [0.0, 6.767e6, 0.0]  # Initial position (m, ECI)
 v = [4.7681e3, 0.0, 6.0244e3]  # Initial velocity (m / s)

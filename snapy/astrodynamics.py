@@ -1,6 +1,10 @@
+import datetime
+from math import pi
 from math import sin, cos, acos
 
 import numpy as np
+
+from snapy.constants import C_EI, DATE_EI
 
 
 def direction_cosine_matrix(thetas: np.array) -> np.array:
@@ -185,3 +189,46 @@ def nadir_vector(x: np.array) -> np.array:
     """
     u_e = -x / np.linalg.norm(x)
     return u_e
+
+
+def rotate_ecef_dcm(c_ei: np.array, t: float) -> np.array:
+    """Rotates the matrix c_ei (ECI to ECEF) according to Earth's rotation
+
+    Parameters
+    ----------
+    c_ei : numpy.array
+        Original c_ei matrix
+    t : float
+        Time in the future, in seconds
+
+    Returns
+    -------
+    c_ei_new : numpy.array
+        c_ei after t seconds
+
+    """
+    thetas = np.array([-2 * pi * t / 24 / 60 / 60, 0, 0])
+    dcm = direction_cosine_matrix(thetas)
+    c_ei_new = c_ei * dcm
+    return c_ei_new
+
+
+def compute_ecef_dcm(date: str) -> np.array:
+    """Computes the rotation matrix from ECI to ECEF at a given date
+
+    Parameters
+    ----------
+    date : str
+        Date when the matrix is computed, in format "%Y/%m/%d %H:%M:%S"
+
+    Returns
+    -------
+    c_ei : numpy.array
+        Rotation matrix from ECI to ECEF
+    
+    """
+    date_ei = datetime.datetime.strptime(DATE_EI, "%Y/%m/%d %H:%M:%S.%f")
+    date = datetime.datetime.strptime(date, "%Y/%m/%d %H:%M:%S.%f")
+    t = (date - date_ei).total_seconds()
+    c_ei = rotate_ecef_dcm(C_EI, t)
+    return c_ei
