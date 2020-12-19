@@ -7,7 +7,7 @@ import numpy as np
 from snapy.constants import C_EI, DATE_EI
 
 
-def direction_cosine_matrix(thetas: np.array) -> np.array:
+def direction_cosine_matrix(thetas: np.array, order:str="xyz") -> np.array:
     """The Direction Cosine Matrix (DCM) is a 3 by 3 matrix that defines the
     rotations between two reference frames.
 
@@ -22,28 +22,31 @@ def direction_cosine_matrix(thetas: np.array) -> np.array:
         Direction Cosine Matrix
 
     """
-    r1 = np.array(
+    r_mat = np.array(
         [
             [1, 0, 0],
             [0, cos(thetas[0]), sin(thetas[0])],
             [0, -sin(thetas[0]), cos(thetas[0])],
         ]
     )
-    r2 = np.array(
+    p_mat = np.array(
         [
             [cos(thetas[1]), 0, -sin(thetas[1])],
             [0, 1, 0],
             [sin(thetas[1]), 0, cos(thetas[1])],
         ]
     )
-    r3 = np.array(
+    y_mat = np.array(
         [
             [cos(thetas[2]), sin(thetas[2]), 0],
             [-sin(thetas[2]), cos(thetas[2]), 0],
             [0, 0, 1],
         ]
     )
-    c = np.dot(np.dot(r1, r2), r3)
+    if order == "xyz":
+        c = np.matmul(np.matmul(y_mat, p_mat), r_mat)
+    elif order == "zyx":
+        c = np.matmul(np.matmul(r_mat, p_mat), y_mat)
     return c
 
 
@@ -208,8 +211,8 @@ def rotate_ecef_dcm(c_ei: np.array, t: float) -> np.array:
 
     """
     thetas = np.array([-2 * pi * t / 24 / 60 / 60, 0, 0])
-    dcm = direction_cosine_matrix(thetas)
-    c_ei_new = c_ei * dcm
+    dcm = direction_cosine_matrix(thetas, order="zyx")
+    c_ei_new = np.matmul(c_ei, dcm)
     return c_ei_new
 
 
