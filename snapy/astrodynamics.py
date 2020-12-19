@@ -7,7 +7,7 @@ import numpy as np
 from snapy.constants import C_EI, DATE_EI
 
 
-def direction_cosine_matrix(thetas: np.array, order:str="xyz") -> np.array:
+def direction_cosine_matrix(thetas: np.array, order: str = "xyz") -> np.array:
     """The Direction Cosine Matrix (DCM) is a 3 by 3 matrix that defines the
     rotations between two reference frames.
 
@@ -15,6 +15,8 @@ def direction_cosine_matrix(thetas: np.array, order:str="xyz") -> np.array:
     ----------
     thetas : numpy.array
         The Euler rotation angles (roll, pitch, yaw), in radians
+    order: str, optional
+        Rotation sequence, by default "xyz"
 
     Returns
     -------
