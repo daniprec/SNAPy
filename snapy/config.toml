@@ -17,6 +17,7 @@ b_s = 0.73  # Saturation (T)
 k = 0.6
 p = 4.75
 q0 = 0.0885
+b = [0, 0, 0]
 
 [shielding]
 vol = [0.0, 0.574e-6, 0.0]  # Volume (m3)
@@ -26,6 +27,7 @@ b_s = 0.75  # Saturation (T)
 k = 9592
 p = 4.75
 q0 = 0.0885
+b = [0, 0, 0]
 
 [simulation]
 x = [0.0, 6.767e6, 0.0]  # Initial position (m, ECI)
