@@ -3,8 +3,9 @@ from math import pi
 from math import sin, cos, acos
 
 import numpy as np
+from scipy.spatial.transform import Rotation as R
 
-from snapy.constants import C_EI, DATE_EI
+from snapy.constants import C_EI, DATE_EI, TIME_ROTATION
 
 
 def direction_cosine_matrix(thetas: np.array, order: str = "xyz") -> np.array:
@@ -24,33 +25,8 @@ def direction_cosine_matrix(thetas: np.array, order: str = "xyz") -> np.array:
         Direction Cosine Matrix
 
     """
-    r_mat = np.array(
-        [
-            [1, 0, 0],
-            [0, cos(thetas[0]), sin(thetas[0])],
-            [0, -sin(thetas[0]), cos(thetas[0])],
-        ]
-    )
-    p_mat = np.array(
-        [
-            [cos(thetas[1]), 0, -sin(thetas[1])],
-            [0, 1, 0],
-            [sin(thetas[1]), 0, cos(thetas[1])],
-        ]
-    )
-    y_mat = np.array(
-        [
-            [cos(thetas[2]), sin(thetas[2]), 0],
-            [-sin(thetas[2]), cos(thetas[2]), 0],
-            [0, 0, 1],
-        ]
-    )
-    if order == "xyz":
-        c = np.matmul(np.matmul(y_mat, p_mat), r_mat)
-    elif order == "zyx":
-        c = np.matmul(np.matmul(r_mat, p_mat), y_mat)
-    else:
-        raise ValueError(f"Order {order} is not valid")
+    r = R.from_euler(order, thetas)
+    c = r.as_dcm()
     return c
 
 
@@ -288,8 +264,8 @@ def rotate_ecef_dcm(c_ei: np.array, t: float) -> np.array:
         c_ei after t seconds
 
     """
-    thetas = np.array([-2 * pi * t / 24 / 60 / 60, 0, 0])
-    dcm = direction_cosine_matrix(thetas, order="zyx")
+    thetas = np.array([-2 * pi * t / TIME_ROTATION, 0, 0])
+    dcm = direction_cosine_matrix(thetas, "zyx")
     c_ei_new = np.matmul(c_ei, dcm)
     return c_ei_new
 

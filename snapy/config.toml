@@ -31,5 +31,5 @@ q0 = 0.0885
 x = [0.0, 6.767e6, 0.0]  # Initial position (m, ECI)
 v = [4.7681e3, 0.0, 6.0244e3]  # Initial velocity (m / s)
 w = [90, 90, 90]  # Initial tumbling rates (deg / s)
-dt = 1  # Time delta (s)
+dt = 1e-3  # Time delta (s)
 date = "2021/03/01 00:00:00"
