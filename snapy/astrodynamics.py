@@ -49,6 +49,8 @@ def direction_cosine_matrix(thetas: np.array, order: str = "xyz") -> np.array:
         c = np.matmul(np.matmul(y_mat, p_mat), r_mat)
     elif order == "zyx":
         c = np.matmul(np.matmul(r_mat, p_mat), y_mat)
+    else:
+        raise ValueError(f"Order {order} is not valid")
     return c
 
 
@@ -158,13 +160,13 @@ def quartenions_dot(w: np.array, q: np.array, q4: float) -> tuple:
     return q_dot, q4_dot
 
 
-def dynamic_equation(j: np.array, w_dot: np.array, w: np.array):
+def dynamic_equation(inertia: np.array, w_dot: np.array, w: np.array):
     """
 
     Parameters
     ----------
-    j : numpy.array
-        Body's interia matrix
+    inertia : numpy.array
+        Body's inertia matrix
     w_dot : numpy.array
     w : numpy.array
 
@@ -174,8 +176,82 @@ def dynamic_equation(j: np.array, w_dot: np.array, w: np.array):
         External angular moment applied to the body's main axes
 
     """
-    m = np.dot(j, w_dot) + np.cross(w_dot, np.dot(j, w))
+    m = np.matmul(inertia, w_dot) + np.cross(w, np.matmul(inertia, w))
     return m
+
+
+def dynamic_equation_acceleration(
+    inertia: np.array, w: np.array, m: np.array
+) -> np.array:
+    """Computes the acceleration of angular velocity. Real calculus should be done by
+    integration. This approximation is expected to be valid at small time steps.
+
+    Parameters
+    ----------
+    inertia : numpy.array
+        Body's inertia matrix
+    w : numpy.array
+        Angular velocity, in radians per second
+    m : numpy.array
+        External angular moment applied to the body's main axes
+
+    Returns
+    -------
+    w_dot : numpy.array
+        Angular velocity acceleration, in radians per second squared
+
+    """
+    w_dot = np.matmul(np.linalg.inv(inertia), m - np.cross(w, np.matmul(inertia, w)))
+    return w_dot
+
+
+def angular_velocity_change(
+    inertia: np.array, w: np.array, m: np.array, dt: float
+) -> np.array:
+    """Computes the change of angular velocity. Real calculus should be done by
+    integration. This approximation is expected to be valid at small time steps.
+
+    Parameters
+    ----------
+    inertia : numpy.array
+        Body's inertia matrix
+    w : numpy.array
+        Angular velocity, in radians per second
+    m : numpy.array
+        External angular moment applied to the body's main axes
+    dt : float
+        Time delta, in seconds
+
+    Returns
+    -------
+    w_new : numpy.array
+        Angular velocity, in radians per second
+
+    """
+    w_dot = dynamic_equation_acceleration(inertia, w, m)
+    w_new = w + w_dot * dt
+    return w_new
+
+
+def euler_angles_change(thetas: np.array, w: np.array, dt: float) -> np.array:
+    """Move the Euler angles according to the angular velocity
+
+    Parameters
+    ----------
+    thetas : numpy.array
+        The Euler rotation angles (roll, pitch, yaw), in radians
+    w : numpy.array
+        Angular velocity, in radians per second
+    dt : float
+        Time delta, in seconds
+
+    Returns
+    -------
+    thetas_new : numpy.array
+
+    """
+    thetas_new = thetas + w * dt
+    return thetas_new
 
 
 def nadir_vector(x: np.array) -> np.array:
