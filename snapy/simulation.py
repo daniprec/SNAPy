@@ -16,7 +16,7 @@ from snapy.torque.magnetism import (
     magnetic_field_change,
     hysteresis_torque,
 )
-from snapy.translation.dynamics import change_in_velocity_and_position
+from snapy.translation.dynamics import compute_velocity_and_position
 
 
 class Simulation:
@@ -50,9 +50,9 @@ class Simulation:
 
     def _update_velocity_and_position(self):
         f_g = gravitational_force(self.x, self.m_sat)
-        dv, dx = change_in_velocity_and_position(f_g, self.m_sat, self.dt)
-        self.v = self.v + dv
-        self.x = self.x + dx
+        self.v, self.x = compute_velocity_and_position(
+            self.x, self.v, f_g, self.m_sat, self.dt
+        )
 
     def _update_date(self):
         self.date = self.date + datetime.timedelta(seconds=self.dt)
