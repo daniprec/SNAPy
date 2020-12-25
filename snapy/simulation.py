@@ -34,6 +34,9 @@ class Simulation:
         self.v = cfg["simulation"]["v"]
         self.w = cfg["simulation"]["w"]
         self.dt = cfg["simulation"]["dt"]
+        if self.dt >= 0.01:
+            raise ValueError(f"Lower the time delta below 0.01 seconds!"
+                             f"Given is {self.dt}, may cause convergence errors")
         self.date_start = cfg["simulation"]["date"]
         self.date = datetime.datetime.strptime(self.date_start, "%Y/%m/%d %H:%M:%S")
 
