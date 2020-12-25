@@ -1,6 +1,5 @@
 import datetime
-from math import pi
-from math import sin, cos, acos
+from math import pi, sin, cos, acos
 
 import numpy as np
 from scipy.spatial.transform import Rotation as R
@@ -227,6 +226,8 @@ def euler_angles_change(thetas: np.array, w: np.array, dt: float) -> np.array:
 
     """
     thetas_new = thetas + w * dt
+    # Change thetas to range [0 , 2 pi]
+    thetas_new = thetas_new % (2 * pi)
     return thetas_new
 
 
