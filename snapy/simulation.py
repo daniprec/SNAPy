@@ -116,6 +116,7 @@ def run_simulation(
     dt_store: float = 1,
     path_conf: str = "snapy/config.toml",
     path_output: str = "output.csv",
+    round_float: int = 2,
 ):
     """Run the simulation
 
@@ -127,6 +128,7 @@ def run_simulation(
         Time step at which data is stored, in seconds, by default 1
     path_conf : str, optional
     path_output : str, optional
+    round_float : int, optional
 
     """
     # Load the config file
@@ -139,18 +141,24 @@ def run_simulation(
     print(f"Doing {length} steps")
     dt_check = int(dt_store / sim.dt)
 
+    f = round_float
+
     with open(path_output, "w") as text_file:
         text_file.write(
-            "date;" "w_roll;w_pitch;w_yaw;" "theta_roll;theta_pitch;theta_yaw;"
+            "date;" "w_roll;w_pitch;w_yaw;" "theta_roll;theta_pitch;theta_yaw\n"
         )
-        for i in range(length):
-            sim.step()
-            if i % dt_check == 0:
-                w = sim.w
-                t = sim.thetas
+
+    for i in range(length):
+        if i % dt_check == 0:
+            w = sim.w
+            t = sim.thetas
+            with open(path_output, "a") as text_file:
                 text_file.write(
-                    f"{sim.date};" f"{w[0]};{w[1]};{w[2]};" f"{t[0]};{t[1]};{t[2]};"
+                    f"{sim.date};"
+                    f"{round(w[0], f)};{round(w[1], f)};{round(w[2], 2)};"
+                    f"{round(t[0], f)};{round(t[1], f)};{round(t[2], f)}\n"
                 )
+        sim.step()
 
 
 if __name__ == "__main__":
