@@ -37,13 +37,13 @@ class Simulation:
         self.date_start = cfg["simulation"]["date"]
         self.date = datetime.datetime.strptime(self.date_start, "%Y/%m/%d %H:%M:%S")
 
-        # Magnetic field
-        self.b_earth = earth_magnetic_field(self.x, self.c_ei)
-        self._update_earth_magnetic_field()
-
         # Euler angles
         self.thetas = np.zeros(3)
         self._compute_rotation_matrices()
+
+        # Magnetic field
+        self.b_earth = earth_magnetic_field(self.x, self.c_ei)
+        self._update_earth_magnetic_field()
 
         # Torques
         self.m = np.zeros(3)
