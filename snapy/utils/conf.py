@@ -32,9 +32,22 @@ class Conf(dict):
             val = dict.__getitem__(self, key)
 
         # Transform list to numpy
+        val = self._list_to_numpy(val)
+
+        return val
+
+    def _list_to_numpy(self, val):
         if type(val) is list:
             val = np.array(val)
-        return val
+            return val
+        elif type(val) is dict:
+            new_val = {}
+            for k, v in val.items():
+                new_val[k] = self._list_to_numpy(v)
+            val.update(new_val)
+            return val
+        else:
+            return val
 
 
 def load_conf(path: Union[str, Path], key: str = None) -> Conf:
