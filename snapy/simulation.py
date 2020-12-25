@@ -1,6 +1,7 @@
 import datetime
 
 import numpy as np
+import typer
 
 from snapy.torque.astrodynamics import (
     angular_velocity_change,
@@ -17,6 +18,7 @@ from snapy.torque.magnetism import (
     hysteresis_torque,
 )
 from snapy.translation.dynamics import compute_velocity_and_position
+from snapy.utils.conf import load_conf
 
 
 class Simulation:
@@ -107,3 +109,49 @@ class Simulation:
         self._update_earth_magnetic_field()
         self._compute_torques()
         self._rotate_satellite()
+
+
+def run_simulation(
+    time: float = 86400,
+    dt_store: float = 1,
+    path_conf: str = "snapy/config.toml",
+    path_output: str = "output.csv",
+):
+    """Run the simulation
+
+    Parameters
+    ----------
+    time : float, optional
+        Time that the simulation will simulate, in seconds, by defaul 86400
+    dt_store : float
+        Time step at which data is stored, in seconds, by default 1
+    path_conf : str, optional
+    path_output : str, optional
+
+    """
+    # Load the config file
+    cfg = load_conf(path_conf)
+    # Start the simulation
+    sim = Simulation(cfg)
+
+    # Compute number of steps
+    length = int(time / sim.dt)
+    print(f"Doing {length} steps")
+    dt_check = int(dt_store / sim.dt)
+
+    with open(path_output, "w") as text_file:
+        text_file.write(
+            "date;" "w_roll;w_pitch;w_yaw;" "theta_roll;theta_pitch;theta_yaw;"
+        )
+        for i in range(length):
+            sim.step()
+            if i % dt_check == 0:
+                w = sim.w
+                t = sim.thetas
+                text_file.write(
+                    f"{sim.date};" f"{w[0]};{w[1]};{w[2]};" f"{t[0]};{t[1]};{t[2]};"
+                )
+
+
+if __name__ == "__main__":
+    typer.run(run_simulation)

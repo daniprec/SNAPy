@@ -191,6 +191,10 @@ def hysteresis_loop(
     # Compute the new magnetic field of the material
     b_new = b + dbdt * dt
 
+    # Ensure it doesnt surpass its saturation
+    b_new[b_new > b_s] = b_s
+    b_new[b_new < -b_s] = -b_s
+
     return b_new
 
 
