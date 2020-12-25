@@ -7,10 +7,10 @@ inertia = [
 ]  # Inertia matrix J (kg m2)
 
 [magnets]
-mag = [0.5, 0.0, 0.0]  # Magnetic dipole (A m2)
+mag = [0.0, 0.0, 0.04]  # Magnetic dipole (A m2)
 
 [rods]
-vol = [0.05e-6, 0.05e-6, 0.05e-6]  # Volume (m3)
+vol = [0.3e-6, 0.0, 0.0]  # Volume (m3)
 h_c = 1.59  # Coercitivity (A m)
 b_r = 0.35  # Remanence (T)
 b_s = 0.73  # Saturation (T)
