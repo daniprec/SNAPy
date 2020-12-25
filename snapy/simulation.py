@@ -111,9 +111,14 @@ class Simulation:
         self._rotate_satellite()
 
 
+def _write_vector(vec: np.array, f: int):
+    s = f"{round(vec[0], f)};{round(vec[1], f)};{round(vec[2], f)}"
+    return s
+
+
 def run_simulation(
     time: float = 86400,
-    dt_store: float = 1,
+    dt_store: float = 10,
     path_conf: str = "snapy/config.toml",
     path_output: str = "output.csv",
     round_float: int = 2,
@@ -145,18 +150,17 @@ def run_simulation(
 
     with open(path_output, "w") as text_file:
         text_file.write(
-            "date;" "w_roll;w_pitch;w_yaw;" "theta_roll;theta_pitch;theta_yaw\n"
+            "date;x;y;z;w_roll;w_pitch;w_yaw;" "theta_roll;theta_pitch;theta_yaw\n"
         )
 
     for i in range(length):
         if i % dt_check == 0:
-            w = sim.w
-            t = sim.thetas
             with open(path_output, "a") as text_file:
                 text_file.write(
                     f"{sim.date};"
-                    f"{round(w[0], f)};{round(w[1], f)};{round(w[2], 2)};"
-                    f"{round(t[0], f)};{round(t[1], f)};{round(t[2], f)}\n"
+                    f"{_write_vector(sim.x, f)};"
+                    f"{_write_vector(sim.w, f)};"
+                    f"{_write_vector(sim.thetas, f)}\n"
                 )
         sim.step()
 
