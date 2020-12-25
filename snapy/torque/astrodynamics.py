@@ -5,7 +5,7 @@ from math import sin, cos, acos
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
-from snapy.constants import C_EI, DATE_EI, TIME_ROTATION
+from snapy.utils.constants import C_EI, DATE_EI, TIME_ROTATION
 
 
 def direction_cosine_matrix(thetas: np.array, order: str = "xyz") -> np.array:

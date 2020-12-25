@@ -1,7 +1,7 @@
 import numpy as np
 
-from snapy.astrodynamics import nadir_vector
-from snapy.constants import G, MU, M_EARTH
+from snapy.torque.astrodynamics import nadir_vector
+from snapy.utils.constants import G, MU, M_EARTH
 
 
 def gravity_acceleration(x: np.array, m_body: float = M_EARTH) -> np.array:

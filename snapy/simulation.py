@@ -1,19 +1,22 @@
-import numpy as np
-import datetime as dt
+import datetime
 
-from snapy.astrodynamics import (
+import numpy as np
+
+from snapy.torque.astrodynamics import (
     angular_velocity_change,
     compute_ecef_dcm,
     euler_angles_change,
     direction_cosine_matrix,
+    rotate_ecef_dcm,
 )
-from snapy.gravity import gravity_torque_smart
-from snapy.magnetism import (
+from snapy.torque.gravity import gravity_torque_smart, gravitational_force
+from snapy.torque.magnetism import (
     earth_magnetic_field,
     magnetic_torque,
     magnetic_field_change,
     hysteresis_torque,
 )
+from snapy.translation.dynamics import change_in_velocity_and_position
 
 
 class Simulation:
@@ -31,31 +34,42 @@ class Simulation:
         self.v = cfg["simulation"]["v"]
         self.w = cfg["simulation"]["w"]
         self.dt = cfg["simulation"]["dt"]
-        self.date = cfg["simulation"]["date"]
+        self.date_start = cfg["simulation"]["date"]
+        self.date = datetime.datetime.strptime(self.date_start, "%Y/%m/%d %H:%M:%S")
 
-        # Mangetic field
+        # Magnetic field
         self.b_earth = earth_magnetic_field(self.x, self.c_ei)
         self._update_earth_magnetic_field()
 
         # Euler angles
         self.thetas = np.zeros(3)
-        self._update_rotation_matrices()
+        self._compute_rotation_matrices()
 
         # Torques
         self.m = np.zeros(3)
 
-    def _update_position(self):
-        self.x = self.x + self.v + self.dt
+    def _update_velocity_and_position(self):
+        f_g = gravitational_force(self.x, self.m_sat)
+        dv, dx = change_in_velocity_and_position(f_g, self.m_sat, self.dt)
+        self.v = self.v + dv
+        self.x = self.x + dx
 
     def _update_date(self):
-        self.date = self.date + dt.timedelta(seconds=self.dt)
+        self.date = self.date + datetime.timedelta(seconds=self.dt)
+
+    def _compute_rotation_matrices(self):
+        # Rotation matrices
+        # ECI to body frame
+        self.c_bi = direction_cosine_matrix(self.thetas)
+        # ECI to ECEF
+        self.c_ei = compute_ecef_dcm(self.date_start)
 
     def _update_rotation_matrices(self):
         # Rotation matrices
-        # ECI to bodyframe
+        # ECI to body frame
         self.c_bi = direction_cosine_matrix(self.thetas)
         # ECI to ECEF
-        self.c_ei = compute_ecef_dcm(self.date)
+        self.c_ei = rotate_ecef_dcm(self.c_ei, self.dt)
 
     def _update_earth_magnetic_field(self):
         self.b_earth_prev = self.b_earth
@@ -87,7 +101,7 @@ class Simulation:
         self.thetas = euler_angles_change(self.thetas, self.w, self.dt)
 
     def step(self):
-        self._update_position()
+        self._update_velocity_and_position()
         self._update_date()
         self._update_rotation_matrices()
         self._update_earth_magnetic_field()

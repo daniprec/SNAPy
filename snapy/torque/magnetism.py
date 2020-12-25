@@ -2,8 +2,8 @@ from math import pi
 
 import numpy as np
 
-from snapy.astrodynamics import nadir_vector
-from snapy.constants import MU0, R_EARTH, H0, MAG_EARTH
+from snapy.torque.astrodynamics import nadir_vector
+from snapy.utils.constants import MU0, R_EARTH, H0, MAG_EARTH
 
 
 def magnetic_dipole_coil(i: float, n: int, area: float) -> float:
