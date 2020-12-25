@@ -151,7 +151,7 @@ def dynamic_equation(inertia: np.array, w_dot: np.array, w: np.array):
         External angular moment applied to the body's main axes
 
     """
-    m = np.matmul(inertia, w_dot) + np.cross(w, np.matmul(inertia, w))
+    m = np.matmul(inertia, w_dot) + np.matmul(np.cross(w, inertia), w)
     return m
 
 
@@ -176,7 +176,7 @@ def dynamic_equation_acceleration(
         Angular velocity acceleration, in radians per second squared
 
     """
-    w_dot = np.matmul(np.linalg.inv(inertia), m - np.cross(w, np.matmul(inertia, w)))
+    w_dot = np.matmul(np.linalg.inv(inertia), m - np.matmul(np.cross(w, inertia), w))
     return w_dot
 
 
